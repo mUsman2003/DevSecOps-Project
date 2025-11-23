@@ -2,20 +2,45 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: netflix-app
+  namespace: default
   labels:
-    app: netflix-app
+    app: netflix
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: netflix-app
+      app: netflix
   template:
     metadata:
       labels:
-        app: netflix-app
+        app: netflix
     spec:
       containers:
-      - name: netflix-app
-        image: nasi101/netflix:latest
+      - name: netflix
+        image: wajihaaz2003/netflix:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
+          protocol: TCP
+        env:
+        - name: TMDB_V3_API_KEY
+          value: "b2574d2f98dcf78e00570928236a0cc3"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
